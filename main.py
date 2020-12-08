@@ -14,7 +14,7 @@ from emoji import emojize
 from tgtg import TgtgClient
 from tgtg.exceptions import TgtgAPIError
 
-from my_user import USERS
+from user import USERS
 
 
 load_dotenv()
