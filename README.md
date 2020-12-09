@@ -1,6 +1,6 @@
 # Too Good To Go Notifier
 
-Project based on [tgtg-python](https://github.com/ahivert/tgtg-python)
+Based on [tgtg-python](https://github.com/ahivert/tgtg-python) project.
 
 ## Instalation
 
@@ -72,8 +72,10 @@ You can send notification on Slack, Telegram or Discord
 
 You can set a sentry sdk url in `.env` beside `main.py` file.
 
-> SENTRY_SDK_URL=...
-
+```
+SENTRY_SDK_URL=...
+SENTRY_SDK_ENVIRONMENT=...
+```
 
 ## Run
 

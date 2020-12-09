@@ -22,7 +22,8 @@ load_dotenv()
 if os.environ.get('SENTRY_SDK_URL'):
     sentry_sdk.init(
         os.environ.get('SENTRY_SDK_URL'),
-        traces_sample_rate=1.0
+        traces_sample_rate=1.0,
+        environment=os.environ.get('SENTRY_SDK_ENVIRONMENT')
     )
 
 base_path = os.path.dirname(os.path.realpath(__file__))
