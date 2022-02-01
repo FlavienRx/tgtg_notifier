@@ -33,7 +33,7 @@ cursor = db.cursor()
 
 # Create favorite_stores table if not exists
 cursor.execute(
-    "CREATE TABLE IF NOT EXISTS favorite_stores (user_id int, store_name text, nb_item int)"
+    "CREATE TABLE IF NOT EXISTS favorite_stores (user_id int, store_id text, item_id text UNIQUE, nb_item int)"
 )
 
 local_tz = pytz.timezone('Europe/Paris')
@@ -69,7 +69,7 @@ for USER in USERS:
         if store['items_available'] > 0:
             for favorite_store in favorite_stores:
                 if (
-                    favorite_store['store_name'] == store['store']['store_name']
+                    favorite_store['item_id'] == store['item']['item_id']
                     and favorite_store['nb_item'] == 0
                 ):
 
@@ -106,8 +106,18 @@ for USER in USERS:
 
                     # If same pickup day
                     if day:
+                      if store['item']['name'] == '':
                         text = '{} new item(s) in {}, pickup {} between {} and {}'.format(
                                 store['items_available'],
+                                store['store']['store_name'],
+                                day,
+                                pickup_from.strftime("%H:%M"),
+                                pickup_latest.strftime("%H:%M"),
+                            )
+                      else:
+                        text = '{} new item(s) {} in {}, pickup {} between {} and {}'.format(
+                                store['items_available'],
+                                store['item']['name'],
                                 store['store']['store_name'],
                                 day,
                                 pickup_from.strftime("%H:%M"),
@@ -144,11 +154,11 @@ for USER in USERS:
 
         # Update or create favorite store
         cursor.execute(
-            """INSERT OR REPLACE
-            INTO favorite_stores(user_id, store_name, nb_item)
-            VALUES(?, ?, ?)""", (
+            """INSERT OR REPLACE INTO favorite_stores(user_id, store_id, item_id, nb_item)
+            VALUES(?, ?, ?, ?)""", (
                 USER['tgtg_user_id'],
-                store['store']['store_name'],
+                store['store']['store_id'],
+                store['item']['item_id'],
                 store['items_available']
             )
         )
