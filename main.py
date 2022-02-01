@@ -126,8 +126,17 @@ for USER in USERS:
 
                     # Else different pickup day
                     else:
+                        if store['item']['name'] == '':
                         text = '{} new item(s) in {}, pickup between {} and {}'.format(
                                 store['items_available'],
+                                store['store']['store_name'],
+                                pickup_from.strftime("%d-%m-%Y %H:%M"),
+                                pickup_latest.strftime("%d-%m-%Y %H:%M"),
+                            )
+                      else:
+                        text = '{} new item(s) {} in {}, pickup between {} and {}'.format(
+                                store['items_available'],
+                                store['item']['name'],
                                 store['store']['store_name'],
                                 pickup_from.strftime("%d-%m-%Y %H:%M"),
                                 pickup_latest.strftime("%d-%m-%Y %H:%M"),
