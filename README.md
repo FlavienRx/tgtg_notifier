@@ -12,61 +12,41 @@ Once Pipenv is installed, create a virtual env with Python 3 with this command
 To install third package, run this command
 > pipenv install
 
-## Get your Too Good To Go token
+## Project set up
+Run once the project to create the database
+> pipenv run python main.py
 
-To get your Too Good To Go token, run those commands
+In database, set your users email address, notification method and credentials
 
-> python
+Notification can be sended on Slack, Telegram or Discord
 
-> from tgtg import TgtgClient
+### Slak example
 
-> client = TgtgClient(email=your_email, password=your_password)
+required completed fields example:
 
-> client.get_items()
+* `email`: my-email@mail.com
+* `send_notif_on`: slack
+* `slack_token`: xoxb-124672357-12794653824453-bfD?HGJnbgjgn
+* `slack_user_id`: 1A2B3C4DE5F6
 
-> client.access_token
 
-## Notification
+### Telegram example
 
-You can send notification on Slack, Telegram or Discord
+required completed fields example:
 
-### Slak user example
+* `email`: my-email@mail.com
+* `send_notif_on`: telegram
+* `telegram_token`: 123456:fghMO522fdsfgbn24GN2SlRv7F
+* `telegram_chan_id`: 123456
 
-```python
-{
-    'email': 'your@email.com',
-    'tgtg_user_id': '123456',
-    'tgtg_token': 'e00.eyJzd1fgFGG9fhQ.tl4hjk6_TZQM-MdDhdj_nyluYraD5-3eHp54gWQ',
-    'send_notif_on': 'slack',
-    'slack_token': 'xoxb-124672357-12794653824453-bfD?HGJnbgjgn',
-    'slack_user_id': '1A2B3C4DE5F6',
-},
-```
+### Discord example
 
-### Telegram user example
+required completed fields example:
 
-```python
-{
-    'email': 'your@email.com',
-    'tgtg_user_id': '123456',
-    'tgtg_token': 'e00.eyJzd1fgFGG9fhQ.tl4hjk6_TZQM-MdDhdj_nyluYraD5-3eHp54gWQ',
-    'send_notif_on': 'telegram',
-    'telegram_token': '123456:fghMO522fdsfgbn24GN2SlRv7F',
-    'telegram_chan_id': '123456',
-},
-```
+* `email`: my-email@mail.com
+* `send_notif_on`: discord
+* `discord_webhook_url`: https://discord.com/api/webhooks/...
 
-### Discord user example
-
-```python
-{
-    'email': 'your@email.com',
-    'tgtg_user_id': '123456',
-    'tgtg_token': 'e00.eyJzd1fgFGG9fhQ.tl4hjk6_TZQM-MdDhdj_nyluYraD5-3eHp54gWQ',
-    'send_notif_on': 'discord',
-    'discord_webhook_url': 'https://discord.com/api/webhooks/...'
-},
-```
 
 ## Sentry
 
