@@ -22,7 +22,8 @@ class DbWrapper:
                 slack_user_id int, 
                 telegram_token text, 
                 telegram_chan_id int,
-                discord_webhook_url text
+                discord_webhook_url text,
+                cookie text
             )"""
         )
 
@@ -49,12 +50,12 @@ class DbWrapper:
 
         return users
 
-    def update_user(self, email, user_id, access_token, refresh_token):
+    def update_user(self, email, user_id, access_token, refresh_token, cookie):
         # Update a user
         self.cursor.execute(
-            """UPDATE users SET user_id=?, access_token=?, refresh_token=? 
+            """UPDATE users SET user_id=?, access_token=?, refresh_token=?, cookie=?  
             WHERE email=?""",
-            (user_id, access_token, refresh_token, email),
+            (user_id, access_token, refresh_token, cookie, email),
         )
         # Save (commit) the changes
         self.db.commit()

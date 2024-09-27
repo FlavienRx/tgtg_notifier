@@ -28,7 +28,7 @@ if os.environ.get("SENTRY_SDK_URL"):
 db = DbWrapper()
 users = db.get_users()
 
-local_tz = pytz.timezone("Europe/Paris")
+local_tz = pytz.timezone("America/New_York")
 now = datetime.now(local_tz)
 
 for user in users:
@@ -38,11 +38,13 @@ for user in users:
         tgtg_client = TgtgClient(email=user["email"])
 
         credentials = tgtg_client.get_credentials()
+        print(credentials);
         db.update_user(
             user["email"],
             credentials["user_id"],
             credentials["access_token"],
             credentials["refresh_token"],
+            credentials["cookie"],
         )
 
     else:
@@ -50,12 +52,14 @@ for user in users:
             access_token=user["access_token"],
             refresh_token=user["refresh_token"],
             user_id=user["user_id"],
+            cookie=user["cookie"],
         )
 
     logging.info("User {}".format(user["email"]))
 
     # Init user notifier
     notifier = Notifier(user)
+#    notifier.send_notification('test')
 
     # You can then get items (as default it will get your favorites)
     stores = tgtg_client.get_items()
@@ -67,7 +71,7 @@ for user in users:
         if store["items_available"] > 0:
             for favorite_store in favorite_stores:
                 if (
-                    favorite_store["store_id"] == store["store"]["store_id"]
+                    favorite_store["store_id"] == int(store["store"]["store_id"])
                     and favorite_store["nb_item"] == 0
                 ):
 
