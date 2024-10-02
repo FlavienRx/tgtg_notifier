@@ -32,8 +32,9 @@ class DbWrapper:
             """CREATE TABLE IF NOT EXISTS favorite_stores (
                 user_id int,
                 store_id int,
+                item_id int,
                 nb_item int,
-                UNIQUE(user_id, store_id)
+                UNIQUE(user_id, store_id, item_id)
             )"""
         )
 
@@ -65,25 +66,19 @@ class DbWrapper:
         self.cursor.execute("SELECT * FROM favorite_stores WHERE user_id=?", (user_id,))
         return self.cursor.fetchall()
 
-    def update_create_favorite_store(self, user_id, store_id, items_available):
+    def update_create_favorite_store(self, user_id, store_id, item_id, items_available):
         # Update or create favorite store
-        try:
-            self.cursor.execute(
-                """INSERT INTO favorite_stores(user_id, store_id, nb_item)
-                VALUES(?, ?, ?)""",
-                (
-                    user_id,
-                    store_id,
-                    items_available,
-                ),
-            )
-
-        except sqlite3.IntegrityError:
-            self.cursor.execute(
-                """UPDATE favorite_stores SET nb_item=?
-                WHERE user_id=? and store_id=?""",
-                (items_available, user_id, store_id),
-            )
-
+        print('update_create_favorite_store', user_id, store_id, item_id, items_available)
+        self.cursor.execute(
+            """INSERT INTO favorite_stores(user_id, store_id,item_id, nb_item)
+            VALUES(?, ?, ?, ?) ON CONFLICT(user_id,store_id,item_id) DO UPDATE SET nb_item=excluded.nb_item""",
+            (
+                user_id,
+                store_id,
+                item_id,
+                items_available
+            ),
+        )
         # Save (commit) the changes
         self.db.commit()
+
