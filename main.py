@@ -70,6 +70,7 @@ for user in users:
     for store in stores:
         s = store["store"]
         store_name=s["store_name"]
+        store_branch=s["branch"]
         store_id = int(s["store_id"])
         item = store["item"]
         item_id = int(item["item_id"])
@@ -120,10 +121,11 @@ for user in users:
                     # If same pickup day
                     if day:
                         text = (
-                            "{} new {} in {}, pickup {} between {} and {}".format(
+                            "{} new {} at {} {}, pickup {} between {} and {}".format(
                                 items_available,
                                 item_name,
                                 store_name,
+                                store_branch,
                                 day,
                                 pickup_from.strftime("%H:%M"),
                                 pickup_latest.strftime("%H:%M"),
@@ -132,10 +134,11 @@ for user in users:
 
                     # Else different pickup day
                     else:
-                        text = "{} new {} in {}, pickup between {} and {}".format(
+                        text = "{} new {} at {} {}, pickup between {} and {}".format(
                             items_available,
                             item_name,
                             store_name,
+                            store_branch,
                             pickup_from.strftime("%d-%m-%Y %H:%M"),
                             pickup_latest.strftime("%d-%m-%Y %H:%M"),
                         )

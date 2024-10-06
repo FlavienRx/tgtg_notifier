@@ -68,7 +68,6 @@ class DbWrapper:
 
     def update_create_favorite_store(self, user_id, store_id, item_id, items_available):
         # Update or create favorite store
-        print('update_create_favorite_store', user_id, store_id, item_id, items_available)
         self.cursor.execute(
             """INSERT INTO favorite_stores(user_id, store_id,item_id, nb_item)
             VALUES(?, ?, ?, ?) ON CONFLICT(user_id,store_id,item_id) DO UPDATE SET nb_item=excluded.nb_item""",
