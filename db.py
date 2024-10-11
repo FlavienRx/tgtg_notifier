@@ -22,7 +22,8 @@ class DbWrapper:
                 slack_user_id int, 
                 telegram_token text, 
                 telegram_chan_id int,
-                discord_webhook_url text
+                discord_webhook_url text,
+                cookie text
             )"""
         )
 
@@ -31,8 +32,9 @@ class DbWrapper:
             """CREATE TABLE IF NOT EXISTS favorite_stores (
                 user_id int,
                 store_id int,
+                item_id int,
                 nb_item int,
-                UNIQUE(user_id, store_id)
+                UNIQUE(user_id, store_id, item_id)
             )"""
         )
 
@@ -49,12 +51,12 @@ class DbWrapper:
 
         return users
 
-    def update_user(self, email, user_id, access_token, refresh_token):
+    def update_user(self, email, user_id, access_token, refresh_token, cookie):
         # Update a user
         self.cursor.execute(
-            """UPDATE users SET user_id=?, access_token=?, refresh_token=? 
+            """UPDATE users SET user_id=?, access_token=?, refresh_token=?, cookie=?  
             WHERE email=?""",
-            (user_id, access_token, refresh_token, email),
+            (user_id, access_token, refresh_token, cookie, email),
         )
         # Save (commit) the changes
         self.db.commit()
@@ -64,25 +66,18 @@ class DbWrapper:
         self.cursor.execute("SELECT * FROM favorite_stores WHERE user_id=?", (user_id,))
         return self.cursor.fetchall()
 
-    def update_create_favorite_store(self, user_id, store_id, items_available):
+    def update_create_favorite_store(self, user_id, store_id, item_id, items_available):
         # Update or create favorite store
-        try:
-            self.cursor.execute(
-                """INSERT INTO favorite_stores(user_id, store_id, nb_item)
-                VALUES(?, ?, ?)""",
-                (
-                    user_id,
-                    store_id,
-                    items_available,
-                ),
-            )
-
-        except sqlite3.IntegrityError:
-            self.cursor.execute(
-                """UPDATE favorite_stores SET nb_item=?
-                WHERE user_id=? and store_id=?""",
-                (items_available, user_id, store_id),
-            )
-
+        self.cursor.execute(
+            """INSERT INTO favorite_stores(user_id, store_id,item_id, nb_item)
+            VALUES(?, ?, ?, ?) ON CONFLICT(user_id,store_id,item_id) DO UPDATE SET nb_item=excluded.nb_item""",
+            (
+                user_id,
+                store_id,
+                item_id,
+                items_available
+            ),
+        )
         # Save (commit) the changes
         self.db.commit()
+

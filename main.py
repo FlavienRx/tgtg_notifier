@@ -28,7 +28,7 @@ if os.environ.get("SENTRY_SDK_URL"):
 db = DbWrapper()
 users = db.get_users()
 
-local_tz = pytz.timezone("Europe/Paris")
+local_tz = pytz.timezone("America/New_York")
 now = datetime.now(local_tz)
 
 for user in users:
@@ -43,6 +43,7 @@ for user in users:
             credentials["user_id"],
             credentials["access_token"],
             credentials["refresh_token"],
+            credentials["cookie"],
         )
 
     else:
@@ -50,24 +51,35 @@ for user in users:
             access_token=user["access_token"],
             refresh_token=user["refresh_token"],
             user_id=user["user_id"],
+            cookie=user["cookie"],
         )
 
     logging.info("User {}".format(user["email"]))
 
     # Init user notifier
     notifier = Notifier(user)
+#    notifier.send_notification('test')
 
     # You can then get items (as default it will get your favorites)
     stores = tgtg_client.get_items()
 
     # Get user favorite stores
-    favorite_stores = db.user_favorite_stores(user["user_id"])
+    user_id = user["user_id"]
+    favorite_stores = db.user_favorite_stores(user_id)
 
     for store in stores:
-        if store["items_available"] > 0:
+        s = store["store"]
+        store_name=s["store_name"]
+        store_branch=s["branch"]
+        store_id = int(s["store_id"])
+        item = store["item"]
+        item_id = int(item["item_id"])
+        item_name = item.get("name") or "item(s)"
+        if (items_available:=store["items_available"]) > 0:
             for favorite_store in favorite_stores:
                 if (
-                    favorite_store["store_id"] == store["store"]["store_id"]
+                    favorite_store["store_id"] == store_id
+                    and favorite_store["item_id"] == item_id
                     and favorite_store["nb_item"] == 0
                 ):
 
@@ -109,9 +121,11 @@ for user in users:
                     # If same pickup day
                     if day:
                         text = (
-                            "{} new item(s) in {}, pickup {} between {} and {}".format(
-                                store["items_available"],
-                                store["store"]["store_name"],
+                            "{} new {} at {} {}, pickup {} between {} and {}".format(
+                                items_available,
+                                item_name,
+                                store_name,
+                                store_branch,
                                 day,
                                 pickup_from.strftime("%H:%M"),
                                 pickup_latest.strftime("%H:%M"),
@@ -120,9 +134,11 @@ for user in users:
 
                     # Else different pickup day
                     else:
-                        text = "{} new item(s) in {}, pickup between {} and {}".format(
-                            store["items_available"],
-                            store["store"]["store_name"],
+                        text = "{} new {} at {} {}, pickup between {} and {}".format(
+                            items_available,
+                            item_name,
+                            store_name,
+                            store_branch,
                             pickup_from.strftime("%d-%m-%Y %H:%M"),
                             pickup_latest.strftime("%d-%m-%Y %H:%M"),
                         )
@@ -132,7 +148,8 @@ for user in users:
 
         # Update or create favorite store
         db.update_create_favorite_store(
-            user["user_id"],
-            store["store"]["store_id"],
-            store["items_available"],
+            user_id,
+            store_id,
+            item_id,
+            items_available,
         )

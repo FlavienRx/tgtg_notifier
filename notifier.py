@@ -1,6 +1,7 @@
 import requests
 import slack
 import telegram
+import asyncio
 from emoji import emojize
 
 
@@ -55,10 +56,10 @@ class Notifier:
 
         # Send notif on Telegram
         elif self.send_notif_on == "telegram":
-            self.telegram_bot.send_message(
+            asyncio.get_event_loop().run_until_complete(self.telegram_bot.send_message(
                 chat_id=self.telegram_chan_id,
                 text=emojize(":hamburger: {}".format(text)),
-            )
+            ))
 
         # Send notif on Discord
         elif self.send_notif_on == "discord":
